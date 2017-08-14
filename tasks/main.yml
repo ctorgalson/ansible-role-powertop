@@ -6,7 +6,7 @@
 
 - name: Copy our rc-local.service service into place.
   copy:
-    src: "files/{{ powertop_service_name }}.service"
+    src: "{{ powertop_service_name }}.service"
     dest: "/etc/systemd/system/{{ powertop_service_name }}.service"
   become: true
 
