@@ -1,2 +1,40 @@
 ---
-# tasks file for ansible-role-powertop
+# Creates service to run powertop auto-tune on starup.
+#
+# @see https://www.linuxbabe.com/linux-server/how-to-enable-etcrc-local-with-systemd
+# @see https://askubuntu.com/questions/886620/how-can-i-execute-command-on-startup-rc-local-alternative-on-ubuntu-16-10
+
+- name: Copy our rc-local.service service into place.
+  copy:
+    src: "files/{{ powertop_service_name }}.service"
+    dest: "/etc/systemd/system/{{ powertop_service_name }}.service"
+  become: true
+
+- name: Make it a bash script.
+  lineinfile:
+    path: "/etc/{{ powertop_file_name }}"
+    line: "#!/bin/bash"
+    insertbefore: BOF
+    create: true
+    mode: ugo+x
+  become: true
+
+- name: Make sure /etc/rc.local returns exit code 0. 
+  lineinfile:
+    path: "/etc/{{ powertop_file_name }}"
+    line: "exit 0"  
+    insertafter: EOF
+  become: true
+
+- name: Insert Powertop auto-tune command in /etc/rc.local.
+  lineinfile:
+    path: "/etc/{{ powertop_file_name }}"
+    line: "powertop --auto-tune"
+    insertbefore: "exit: 0"
+  become: true
+
+- name: Enable rc-local service.
+  service:
+    name: "{{ powertop_service_name }}"
+    state: started
+  become: true

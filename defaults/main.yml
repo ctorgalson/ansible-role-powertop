@@ -1,2 +1,6 @@
 ---
-# defaults file for ansible-role-powertop
+# Defaults file for ansible-role-powertop.
+
+powertop_command: "powertop --auto-tune"
+powertop_file_name: "rc.local"
+powertop_service_name: "rc-local"
